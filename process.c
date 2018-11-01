@@ -1,9 +1,7 @@
-/*Code for CSE2431*/
-
 /*
   A kernel module to list process by their names. Print when loading the module.
   In the terminal, compile this module with "make" and load it with "sudo insmod process.ko". 
-  Check the result of printk by dmesg�
+  Check the result of printk by “dmesg”
   Unload it with "sudo rmmod process.ko".
 */
 
@@ -28,7 +26,7 @@ void print_task_by_name(void) {
   // Go over through the list of processes
   for_each_process(task) {
     // Print to syslog
-    printk("Current process: %s, PID: %d\n", task->comm, task->pid);
+    printk("Current process: %s, PID: %d\n, Total run time: %llu\n", task->comm, task->pid, task->se.sum_exec_runtime);
   }
 
   return;
