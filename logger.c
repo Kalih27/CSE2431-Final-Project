@@ -4,8 +4,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#define ALPHA 0.5
 
 volatile int alarmFlag = 0;
+
+long int nextBurstTime(long int, double, long int);
 
 void alarmHandler(int sig){
 	alarmFlag = 1;
@@ -21,12 +24,16 @@ int main() {
 	//string to hold full file path
 	char filePath[100];
 
-	//longs to hold utime and stime (both are clock ticks)
+	//longs to hold utimes and stimes (both are clock ticks)
 	long utime, stime;
-	utime=stime=0;
-	//longs to hold last utime and last stime
 	long lutime, lstime;
-	lutime=lstime=0;
+	utime=stime=lutime=lstime=0;
+
+	//longs to hold delta utime stime
+	long dutime, dstime;
+
+	//long to hold predicted next clock ticks
+	long taunu=10, tauns=10;
 	
 	//get pid from user
 	printf("Please enter PID of process to measure: ");
@@ -46,14 +53,6 @@ int main() {
 		printf("Could not open log file\n");
 		return 0;
 	}
-
-	//puts("r");
-	//open /proc/<neededPID> folder
-	//readFile = fopen(filePath, "r");
-	//if(readFile == NULL){
-		//printf("Could not open read file\n");
-		//return 0;
-	//}
 
 	//signal so that we can use alarm
 	signal(SIGALRM, alarmHandler);
@@ -89,10 +88,14 @@ int main() {
 			printf("User Ticks: %lu\tSystem Ticks: %lu\n", utime, stime);
 			//Print difference if applicable
 			if(inner>0){
-				printf("User delta: %lu\tSystem delta: %lu\n", utime-lutime, stime-lstime);
+				dutime = utime-lutime;
+				dstime = stime-lstime;
+				printf("User delta: %lu\tSystem delta: %lu\n", dutime, dstime);
+				printf("Next User: %lu\tNext System: %lu\n\n", nextBurstTime(dutime, ALPHA, taunu), nextBurstTime(dstime, ALPHA, tauns));
+
 			}
 			//Set last tick count
-			lutime = utime;
+			lutime=utime;
 			lstime=stime;
 
 
@@ -110,9 +113,18 @@ int main() {
 			alarm(1);
 		}
 	}
+
+
 	
 	printf("Bye!\n");
 	//close file
 	fclose(logFile);
 	//fclose(readFile);
+}
+
+
+long int nextBurstTime(long int tn, double alpha, long int taun){
+	long int nextBurst; 
+	nextBurst = alpha * tn + (1 - alpha) * taun;
+	return nextBurst;
 }
