@@ -1,9 +1,11 @@
 //CSE 2431
 //Andrew Maloney
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+
 #define ALPHA 0.5
 
 volatile int alarmFlag = 0;
@@ -25,6 +27,8 @@ int main() {
 	char filePath[100];
 
 	//longs to hold utimes and stimes (both are clock ticks)
+	// utime: CPU time measured in user code, measured in clock ticks
+	// stime: CPU time measured in kernel code, measured in clock ticks
 	long utime, stime;
 	long lutime, lstime;
 	utime=stime=lutime=lstime=0;
@@ -55,6 +59,9 @@ int main() {
 		return 0;
 	}
 
+	// write column title to the log.txt
+	fprintf(logFile, "utime stime\n");
+
 	//signal so that we can use alarm
 	signal(SIGALRM, alarmHandler);
 
@@ -65,6 +72,7 @@ int main() {
 	int outerLoop = 1, inner = 0; //loop variable
 	
 	alarm(1);
+
 	while(outerLoop){
 		//if alarm goes off
 		if(alarmFlag){
@@ -86,7 +94,9 @@ int main() {
 
 			//write number to log file
 			fprintf(logFile, "%lu %lu\n", utime, stime);
+
 			printf("User Ticks: %lu\tSystem Ticks: %lu\n", utime, stime);
+
 			//Print difference if applicable
 			if(inner>0){
 				dutime = utime-lutime;
@@ -97,6 +107,7 @@ int main() {
 				printf("Next User: %lu\tNext System: %lu\n\n", taunu, tauns);
 
 			}
+
 			//Set last tick count
 			lutime=utime;
 			lstime=stime;
@@ -127,6 +138,7 @@ int main() {
 }
 
 
+// Exponential Equation to get the next burst time
 long int nextBurstTime(long int tn, double alpha, long int taun){
 	long int nextBurst; 
 	nextBurst = alpha * tn + (1 - alpha) * taun;
