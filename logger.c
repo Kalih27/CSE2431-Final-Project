@@ -1,17 +1,23 @@
 //CSE 2431
-//Andrew Maloney
+//Andrew Maloney, Alec Wilson, Jiaqian Huang
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
 
+//used to calculate next burst time
 #define ALPHA 0.5
 
+//flag for alarm() command
+//1 when alarm goes off, 0 otherwise
 volatile int alarmFlag = 0;
 
+//function header
 long int nextBurstTime(long int, double, long int);
 
+//alarm() handler
+//changes alarmFlag to 1
 void alarmHandler(int sig){
 	alarmFlag = 1;
 }
