@@ -34,6 +34,7 @@ int main() {
 
 	//long to hold predicted next clock ticks
 	long taunu=10, tauns=10;
+	long ltaunu=10, ltauns=10;
 	
 	//get pid from user
 	printf("Please enter PID of process to measure: ");
@@ -90,14 +91,17 @@ int main() {
 			if(inner>0){
 				dutime = utime-lutime;
 				dstime = stime-lstime;
+				taunu = nextBurstTime(dutime, ALPHA, ltaunu);
+				tauns = nextBurstTime(dstime, ALPHA, ltauns);
 				printf("User delta: %lu\tSystem delta: %lu\n", dutime, dstime);
-				printf("Next User: %lu\tNext System: %lu\n\n", nextBurstTime(dutime, ALPHA, taunu), nextBurstTime(dstime, ALPHA, tauns));
+				printf("Next User: %lu\tNext System: %lu\n\n", taunu, tauns);
 
 			}
 			//Set last tick count
 			lutime=utime;
 			lstime=stime;
-
+			ltaunu=taunu;
+			ltauns=tauns;
 
 			//increment inner
 		  	inner++;
