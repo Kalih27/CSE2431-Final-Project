@@ -6,12 +6,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/time.h>
 #define ITERATION 10
 #define ALPHA 0.5
 
 volatile int alarmFlag = 0;
 
 long int nextBurstTime(long int, double, long int);
+int areWeLogging();
 int oneMoreTime();
 int getPID();
 int getTicks(int, long*, long*);
@@ -43,22 +45,13 @@ int main() {
 
 	//open file to log data at user's request
 	char response;
-	int invalid = 1;
 	int logging=0;
 
-	printf("Would you like to log this data? (Y/N): ");
-	response = getchar();
-	invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+	//Create timer for intervals
+	struct itimerval timer;
+	int interval=500;
 
-	while(invalid){
-		printf("%c is not a valid input.\n", response);	
-		printf("Would you like to log this data? (Y/N): ");
-		getchar();
-		response = getchar();
-		invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
-	}
-
-	if(response == 'Y' || response == 'y'){
+	if(areWeLogging()){
 		logFile = fopen("log.txt", "w");
 		if(logFile == NULL){
 			printf("Could not open log file\n");
@@ -67,16 +60,24 @@ int main() {
 		logging=1;
 	}
 
+	//Get interval to poll proc files
+	printf("How fast would you like to report this data? (ms): ");
+	scanf("%d", &interval);
+	while(interval>999 || interval<20){
+		printf("Please enter a value between 20 and 999: ");	
+		scanf("%d", &interval);
+	}
+
 	//loop if user wants to continue
 	do{
 		if(logging){
-			fprintf(logFile, "Iteration%d:\n", dowhileCount);
+			fprintf(logFile, "Iteration%d:", dowhileCount);
 		}
 
 		//get maps file path
 		neededPID = getPID();
 		if(logging){
-			fprintf(logFile, "%d\n", neededPID);
+			fprintf(logFile, "PID%d\n", neededPID);
 		}
 
 		//signal so that alarm can be used
@@ -84,7 +85,12 @@ int main() {
 
 		//initialize alarmFlag to 0
 		alarmFlag = 0;
-		alarm(1);
+		timer.it_value.tv_sec = 0;
+		timer.it_value.tv_usec = interval*1000;
+		timer.it_interval.tv_sec = 0;
+		timer.it_interval.tv_usec = interval*1000;
+		setitimer(ITIMER_REAL, &timer, NULL);
+		//alarm(1);
 		loopCounter = 0;
 
 		//Iterate through process measurement ITERATION times
@@ -126,7 +132,7 @@ int main() {
 
 				//reset alarm
 				alarmFlag = 0;
-				alarm(1);
+				//alarm(1);
 			}
 		} 
 		dowhileCount++;
@@ -148,6 +154,28 @@ long int nextBurstTime(long int tn, double alpha, long int taun){
 	long int nextBurst; 
 	nextBurst = alpha * tn + (1 - alpha) * taun;
 	return nextBurst;
+}
+
+//Ask user if data should be logged
+//Returns 1 if logging should be done
+//        0 otherwise
+int areWeLogging(){
+	char response;
+	int invalid;
+
+	printf("Would you like to log this data? (Y/N): ");
+	response = getchar();
+	invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+
+	while(invalid){
+		printf("%c is not a valid input.\n", response);	
+		printf("Would you like to log this data? (Y/N): ");
+		getchar();
+		response = getchar();
+		invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+	}
+
+	return (response == 'Y' || response == 'y');
 }
 
 //Polls to the user whether to run again or not
