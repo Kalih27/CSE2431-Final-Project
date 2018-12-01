@@ -78,6 +78,7 @@ int main() {
 		neededPID = getPID();
 		if(logging){
 			fprintf(logFile, "PID%d\n", neededPID);
+			fprintf(logFile, "User System ticks\n");
 		}
 
 		//signal so that alarm can be used
