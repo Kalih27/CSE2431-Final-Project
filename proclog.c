@@ -1,11 +1,11 @@
 //Logger that creates a proc file
 //idea from tldp.org/LDP/lkmpg/2.6/html/index.html
 #include <linux/module.h>
-#include <linux/kernal.h>
+#include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -77,7 +77,7 @@ static int proc_seq_show(struct seq_file *s, void *v){
 static struct seq_operations proc_seq_ops = {
 	.start = proc_seq_start,
 	.next = proc_seq_next,
-	.stop = proc_seq_stop
+	.stop = proc_seq_stop,
 	.show = proc_seq_show
 };
 
@@ -86,7 +86,7 @@ static int procfile_open(struct inode *inode, struct file *file){
 }
 
 //function to write to proc file
-int procfile_write(struct file *file, const char *buffer, unsigned long count, void *data){
+static ssize_t procfile_write(struct file *file, const char *buffer, size_t count, loff_t * off){
 	//set buffer size
 	procfs_buffer_size += count;
 	if(procfs_buffer_size > PROCFS_MAX_SIZE){
@@ -94,11 +94,11 @@ int procfile_write(struct file *file, const char *buffer, unsigned long count, v
 		printk("Proc file buffer overflow");
 	}
 	else{
-		printk("Buffer size updated to: %ud", procfs_buffer_size);
+		printk("Buffer size updated to: %lu", procfs_buffer_size);
 	}
 
 	//write data to buffer
-	if(copy_From_user(procfs_buffer+(procfs_buffer_size - count), buffer, count)){
+	if(copy_from_user(procfs_buffer+(procfs_buffer_size - count), buffer, count)){
 		return -EFAULT;
 	}
 
@@ -119,7 +119,7 @@ static const struct file_operations log_file_fops = {
 
 int __init init_MyKernelModule(void){
 	//adapted from stackoverflow.com/questions/8516021/proc-create-example-for-kernel-module
-	proc_file_entry = proc_create("timing_log", 0, NULL, &log_file_fops);
+	log_file = proc_create("timing_log", 0, NULL, &log_file_fops);
 	if(log_file == NULL){
 		return -ENOMEM;
 	}
@@ -134,6 +134,4 @@ void __exit exit_MyKernelModule(void){
 
 module_init(init_MyKernelModule);
 module_exit(exit_MyKernelModule);
-
-MODULE_LISCENSE("GPL v2");
 
