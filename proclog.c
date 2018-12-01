@@ -20,39 +20,56 @@ static char procfs_buffer[PROCFS_MAX_SIZE];
 //size of buffer
 static unsigned long procfs_buffer_size = 0;
 
+//pointer for buffer location in read
+static char *buff_ptr;
+
 //struct to hold info about proc file
 struct proc_dir_entry *log_file;
 
 static void *proc_seq_start(struct seq_file *s, loff_t *pos){
-	static unsigned long counter = 0;
 	
-	printk("Start of sequence read!");
+	printk("Start of sequence read!\n");
 
-	if(*pos ==0){
-		return &counter;
-	}
-	else{
-		*pos = 0;
+	//if pos is greater than or equal to buffer size then leave sequence read 
+	if((*pos) >= procfs_buffer_size){
+		printk("End sequence read\n");
 		return NULL;
 	}
+	
+	buff_ptr = procfs_buffer + ((*pos) * sizeof(char));
+
+	printk("Place in buffer is: %Ld\n", (*pos));
+
+	return buff_ptr;
 }
 
 static void *proc_seq_next(struct seq_file *s, void *v, loff_t *pos){
 	printk("Sequence Next!");
-	unsigned long *tmp_v = (unsigned long *)v;
-	(*tmp_v)++;
-	(*pos)++;
-	return NULL;
+	char *temp = (char*) v;
+	while((*temp) != '\n'){
+		(*pos)++;
+		if((*pos) >= procfs_buffer_size){
+			return NULL;
+		}
+		temp++;
+	}
+	temp++;
+	return temp;
 }
 
 static void proc_seq_stop(struct seq_file *s, void *v){
-	//nothing
+	printk("Sequence stop!");
+	buff_ptr = NULL;
 }
 
 static int proc_seq_show(struct seq_file *s, void *v){
-	loff_t *spos = (loff_t *) v;
-
-	seq_printf(s, "%Ld\n", *spos);
+	printk("Showing value");
+	char *temp = (char*)v;
+	do{
+		seq_putc(s,*temp);
+		temp++;
+	}while(*temp != '\n');
+	seq_putc(s,'\n');
 	return 0;
 }
 
@@ -71,21 +88,21 @@ static int procfile_open(struct inode *inode, struct file *file){
 //function to write to proc file
 int procfile_write(struct file *file, const char *buffer, unsigned long count, void *data){
 	//set buffer size
-	if(count > PROCFS_MAX_SIZE){
+	procfs_buffer_size += count;
+	if(procfs_buffer_size > PROCFS_MAX_SIZE){
 		procfs_buffer_size = PROCFS_MAX_SIZE;
 		printk("Proc file buffer overflow");
 	}
 	else{
-		procfs_buffer_size = count;
-		printk("Buffer size updated to: %ud", count);
+		printk("Buffer size updated to: %ud", procfs_buffer_size);
 	}
 
 	//write data to buffer
-	if(copy_From_user(procfs_buffer, buffer, profs_buffer_size)){
+	if(copy_From_user(procfs_buffer+(procfs_buffer_size - count), buffer, count)){
 		return -EFAULT;
 	}
 
-	return procfs_buffer_size;
+	return count;
 }
 
 
