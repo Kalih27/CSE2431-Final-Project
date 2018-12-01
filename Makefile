@@ -1,5 +1,5 @@
 ifneq ($(KERNELRELEASE),) 
-obj-m := process.o
+obj-m := proclog.o
 else 
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build 
