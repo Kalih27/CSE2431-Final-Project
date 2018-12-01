@@ -1,7 +1,7 @@
-/***CSE 2431 Project***/
-/***Jiaqian Huang   ***/
-/***Andrew Maloney  ***/
-/***Alec Wilson     ***/
+/*** CSE 2431 Project***/
+/*** Jiaqian Huang   ***/
+/*** Andrew Maloney  ***/
+/*** Alec Wilson     ***/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,8 +13,8 @@ volatile int alarmFlag = 0;
 
 long int nextBurstTime(long int, double, long int);
 int oneMoreTime();
-void getFilePath(char*);
-int getTicks(char*, long*, long*);
+int getPID();
+int getTicks(int, long*, long*);
 
 void alarmHandler(int sig){
 	alarmFlag = 1;
@@ -23,9 +23,7 @@ void alarmHandler(int sig){
 int main() {
 	//file pointer for log file and read file
 	FILE *logFile;
-
-	//string to hold full file path
-	char filePath[100];
+	int neededPID = 1;
 
 	//longs to hold utimes and stimes (both are clock ticks)
 	long utime, stime;
@@ -44,9 +42,22 @@ int main() {
 	int dowhileCount = 1;//count iterations
 
 	//open file to log data at user's request
-	printf("Would you like to log this data? (Y for yes): ");
-	char response = getchar();
+	char response;
+	int invalid = 1;
 	int logging=0;
+
+	printf("Would you like to log this data? (Y/N): ");
+	response = getchar();
+	invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+
+	while(invalid){
+		printf("%c is not a valid input.\n", response);	
+		printf("Would you like to log this data? (Y/N): ");
+		getchar();
+		response = getchar();
+		invalid = (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+	}
+
 	if(response == 'Y' || response == 'y'){
 		logFile = fopen("log.txt", "w");
 		if(logFile == NULL){
@@ -63,9 +74,9 @@ int main() {
 		}
 
 		//get maps file path
-		getFilePath(filePath);
+		neededPID = getPID();
 		if(logging){
-			fprintf(logFile, "%s\n", filePath);
+			fprintf(logFile, "%d\n", neededPID);
 		}
 
 		//signal so that alarm can be used
@@ -81,8 +92,13 @@ int main() {
 			//if alarm goes off
 			if(alarmFlag){
 				//get user ticks and system ticks
-				if(!getTicks(filePath, &utime, &stime))
+				if(!getTicks(neededPID, &utime, &stime)){
 					return 0;
+					//close log file if necessary
+					if(logging){
+						fclose(logFile);
+					}
+				}
 
 				//write ticks
 				if(logging){
@@ -139,34 +155,44 @@ long int nextBurstTime(long int tn, double alpha, long int taun){
 //         0 otherwise
 int oneMoreTime(){
 	char cont;
+	int invalid;
 
-	printf("Would you like to run again? (Y to run again): ");
+	printf("Would you like to run again? (Y/N): ");
 	getchar();
 	cont = getchar();
-
+	invalid = (cont != 'Y' && cont != 'y' && cont != 'N' && cont != 'n');
+	while(invalid){
+		printf("%c is not a valid input.\n", cont);	
+		printf("Would you like to run again? (Y/N): ");
+		//getchar();
+		cont = getchar();
+		invalid = (cont != 'Y' && cont != 'y' && cont != 'N' && cont != 'n');
+	}
 	return(cont == 'Y' || cont == 'y');
 }
 
 //Gets file path to read process information based on user input
-//Replaces: filePath
-void getFilePath(char *filePath){
+int getPID(){
 	int neededPID=1;
 
 	//get pid from user
 	printf("Please enter PID of process to measure: ");
 	scanf("%d", &neededPID);
 
-	//create string for file path
-	sprintf(filePath, "/proc/%d/stat", neededPID);
+	return neededPID;
 }
 
 //Gets user and system ticks
 //Replaces: utime, stime
 //Returns: 1 if successful
 //         0 otherwise
-int getTicks(char* filePath, long* utime, long* stime){
+int getTicks(int neededPID, long* utime, long* stime){
 	//File pointer for read
 	FILE *readFile;
+	char filePath[30];
+
+	//create string for file path
+	sprintf(filePath, "/proc/%d/stat", neededPID);
 
 	//open /proc/<neededPID> folder
 	readFile = fopen(filePath, "r");
