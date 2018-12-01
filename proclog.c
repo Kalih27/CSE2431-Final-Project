@@ -11,6 +11,9 @@
 #define __KERNEL__
 #endif
 
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Kernel module to log process times");
+
 //size of buffer ~32Kb
 #define PROCFS_MAX_SIZE	32768
 
@@ -26,17 +29,22 @@ static char *buff_ptr;
 //struct to hold info about proc file
 struct proc_dir_entry *log_file;
 
+static int endflag;
+
 static void *proc_seq_start(struct seq_file *s, loff_t *pos){
 	
 	printk("Start of sequence read!\n");
+	
+	(*pos) = endflag;
+
+	buff_ptr = procfs_buffer + ((*pos) * sizeof(char));
 
 	//if pos is greater than or equal to buffer size then leave sequence read 
-	if((*pos) >= procfs_buffer_size){
+	if((*pos) >= procfs_buffer_size-1 || *buff_ptr == '\0'){
 		printk("End sequence read\n");
 		return NULL;
 	}
 	
-	buff_ptr = procfs_buffer + ((*pos) * sizeof(char));
 
 	printk("Place in buffer is: %Ld\n", (*pos));
 
@@ -45,21 +53,27 @@ static void *proc_seq_start(struct seq_file *s, loff_t *pos){
 
 static void *proc_seq_next(struct seq_file *s, void *v, loff_t *pos){
 	printk("Sequence Next!");
-	char *temp = (char*) v;
+	char *temp = (char*)v;
 	while((*temp) != '\n'){
+		
 		(*pos)++;
+		printk("position increased");
 		if((*pos) >= procfs_buffer_size){
 			return NULL;
 		}
 		temp++;
+		printk("temp increased");
 	}
 	temp++;
+	endflag = (*pos);
+	printk("position is %Ld\n", (*pos));
 	return temp;
 }
 
 static void proc_seq_stop(struct seq_file *s, void *v){
 	printk("Sequence stop!");
 	buff_ptr = NULL;
+	printk("Sequence stop 2: electric bugaloo");
 }
 
 static int proc_seq_show(struct seq_file *s, void *v){
@@ -82,6 +96,7 @@ static struct seq_operations proc_seq_ops = {
 };
 
 static int procfile_open(struct inode *inode, struct file *file){
+	printk("open procfile");
 	return seq_open(file, &proc_seq_ops);
 }
 
@@ -114,7 +129,7 @@ static const struct file_operations log_file_fops = {
  .read = seq_read,
  .write = procfile_write,
  .llseek = seq_lseek,
- .release = single_release,
+ .release = seq_release
 };
 
 int __init init_MyKernelModule(void){
@@ -123,15 +138,17 @@ int __init init_MyKernelModule(void){
 	if(log_file == NULL){
 		return -ENOMEM;
 	}
+	printk("kernel module initialized");
+	endflag = 0;
 	return 0;
 }
 
 void __exit exit_MyKernelModule(void){
 
 	remove_proc_entry("timing_log",NULL);
+	printk("exiting kernel module");
 	return;
 }
 
 module_init(init_MyKernelModule);
 module_exit(exit_MyKernelModule);
-
