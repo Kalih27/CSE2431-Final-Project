@@ -15,16 +15,22 @@
 	```
       
 ## How to run Logger file:
-1. ```$ runLogger
+1. Compile the logger.c file
+   ```sh
+   $ runLogger
+   ``` 
+2. Run the following code
+   ```sh
+   ./logger
    ```
-    This will help compile the logger.c file and then run ./logger
-2. You will be asked whether the process should be logged. If not the output will be showed in the terminal directly.
-2. Will be asked for the rate at which the process will poll the proc folder (20 to 999 ms).
-3. Input the proc id for which the length of next CPU burst will be calculated (You can get this from the list of process ids in terminal with help of some command lines.).
-4. Get a log.txt file to store the actual length of next 10 CPU burst.
-5. Choose to continue executing the programming or quit.
+3. In terminal, the user will be asked whether the process should be logged. If not, the output will be showed in the terminal directly.
+4. If yes, the user will be asked for the rate at which the process will poll the proc folder. The user can choose the option from 20 to 999 ms.
+5. Then the user needs to input the proc id for which the length of next CPU burst will be calculated. (The user can get this from the list of process ids in terminal with help of some command lines.)
+6. Next the user will expect to receive a a log.txt file to store the actual length of next 10 CPU burst.
+7. Eventually, the user can choose to continue executing the programming or quit. If not, the program will be terminated.
+8. If yes, the above steps will be repeated.  
 
-## How to use proclog.c:
+## How to use proclog.c (aka kernel module):
 1. Make the proclog kernel module by following command.
    ```sh
    $ make
