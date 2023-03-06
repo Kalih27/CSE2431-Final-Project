@@ -10,7 +10,8 @@
 
 ## Requirements:
 1. Make sure you have installed:
-	```$ sudo apt-get install build-essential
+	```sh
+	$ sudo apt-get install build-essential
 	```
       
 ## How to run Logger file:
@@ -24,22 +25,26 @@
 5. Choose to continue executing the programming or quit.
 
 ## How to use proclog.c:
-1. ```$ make
+1. Make the proclog kernel module by following command.
+   ```sh
+   $ make
    ```
-   This will make the proclog kernel module
-2. ```$ sudo insmod proclog.ko
+3. Install the kernel module by following command. Then a file /proc/timing_log can be written to by various programs.
+   ```sh
+   $ sudo insmod proclog.ko
    ```
-   This will install the kernel module. A file /proc/timing_log can now be written to by various programs
-3. To see an example of this run the following code:
-4. ```$ gcc -o test test.c
+3. To see an example of this, run the following code:
+   ```sh
+   $ gcc -o test test.c
    ```
-5. ```$ sudo ./test
+5. You will need sudo privaleges to write to a proc file.
+   ```sh
+   $ sudo ./test
+   ``` 
+6. Run the following code. It shows that the test file ran and printed "This is test output" to the proc file. Make sure that any writing done to the proc file ends with a new line character.
+   ```sh
+   $ cat /proc/timing_log
    ```
-   You will need sudo privaleges to write to a proc file
-6. ```$ cat /proc/timing_log
-   ```
-   This shows that the test file ran andd printed "This is test output" to the proc file.
-   Make sure that any writing done to the proc file ends with a new line character.
 
 ## Updates
 1. This repository is forked by JH, one of original contributors of this repository.
