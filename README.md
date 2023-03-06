@@ -39,20 +39,27 @@
    ```
 3. You can verify this by running the following code, which lists all of the modules currently in the kernel. Among them, you should see proclog. Note that the kernel replaces dashes in your module’s filename with underscores when it loads it. If you want to remove it, you can run the following command. 
    ```sh
-   lsmod
+   $ lsmod
    ```
    ```sh
-   sudo rmmod proclog
+   $ sudo rmmod proclog
    ```
-4. To see an example of this, run the following code:
+4. In the source code, we can check some logging to let it be known our module loaded okay by running the following command. If the operation gets denied, set the restriction to 0.  
+   ```sh
+   $ dmesg 
+   ```
+   ```sh
+   $ sudo sysctl kernel.dmesg_restrict=0
+   ```
+5. To see an example of this, run the following code:
    ```sh
    $ gcc -o test test.c
    ```
-5. You will need sudo privaleges to write to a proc file.
+6. You will need sudo privaleges to write to a proc file.
    ```sh
    $ sudo ./test
    ``` 
-6. Run the following code. It shows that the test file ran and printed "This is test output" to the proc file. Make sure that any writing done to the proc file ends with a new line character.
+7. Run the following code. It shows that the test file ran and printed "This is test output" to the proc file. Make sure that any writing done to the proc file ends with a new line character.
    ```sh
    $ cat /proc/timing_log
    ```
