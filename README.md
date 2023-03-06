@@ -1,9 +1,7 @@
 # CSE2431-Final-Project (Original)
 
-## Group Members:
-### Jiaqian Huang
-### Andrew Maloney
-### Alec Wilson
+## Group Members (Original):
+### Jiaqian Huang, Andrew Maloney, Alec Wilson
 
 ## Files:
 ### Makefile, runLogger, logger.c, proclog.c
