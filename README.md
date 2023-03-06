@@ -33,11 +33,18 @@
    ```sh
    $ make
    ```
-3. Install the kernel module by following command. Then a file /proc/timing_log can be written to by various programs.
+2. Install the kernel module by following command. Then a file /proc/timing_log can be written to by various programs.
    ```sh
    $ sudo insmod proclog.ko
    ```
-3. To see an example of this, run the following code:
+3. You can verify this by running the following code, which lists all of the modules currently in the kernel. Among them, you should see proclog. Note that the kernel replaces dashes in your module’s filename with underscores when it loads it. If you want to remove it, you can run the following command. 
+   ```sh
+   lsmod
+   ```
+   ```sh
+   sudo rmmod proclog
+   ```
+4. To see an example of this, run the following code:
    ```sh
    $ gcc -o test test.c
    ```
