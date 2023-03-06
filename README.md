@@ -1,7 +1,8 @@
-# CSE2431-Final-Project (Original)
+# Prediction of CPU Burst
 
-## Group Members (Original):
-### Jiaqian Huang, Andrew Maloney, Alec Wilson
+## Updates
+1. This repository is forked by JH, one of original contributors of this repository.
+2. JH will be the member to work on this forked version for further upgrades. 
 
 ## Files:
 ### Makefile, runLogger, logger.c, proclog.c
@@ -64,7 +65,6 @@
    $ cat /proc/timing_log
    ```
 
-## Updates
-1. This repository is forked by JH, one of original contributors of this repository.
-2. JH will be the member to work on this forked version for further upgrades. 
-   
+## Origin
+1. Title: CSE2431-Final-Project
+2. Group Members: Jiaqian Huang, Andrew Maloney, Alec Wilson
