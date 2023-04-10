@@ -17,7 +17,7 @@ MODULE_DESCRIPTION("Kernel module to log process times");
 
 static void *proc_seq_start(struct seq_file *s, loff_t *pos)
 {
-	printk("Hit proc_seq_start");
+	// printk("Hit proc_seq_start");
 
 	static unsigned long counter = 0;
 
@@ -37,20 +37,20 @@ static void *proc_seq_start(struct seq_file *s, loff_t *pos)
 
 static void *proc_seq_next(struct seq_file *s, void *v, loff_t *pos)
 {
-	printk("Hit proc_seq_next");
+	// printk("Hit proc_seq_next");
 
 	char *temp = (char *)v;
 	temp++;
-	printk("Temp increased.");
+	// printk("Temp increased.");
 	(*pos)++;
-	printk("Position increased.");
-	printk("Position is %Ld\n", (*pos));
+	// printk("Position increased.");
+	// printk("Position is %Ld\n", (*pos));
 	return NULL;
 }
 
 static void proc_seq_stop(struct seq_file *s, void *v)
 {
-	printk("Hit proc_seq_stop");
+	// printk("Hit proc_seq_stop");
 }
 
 static long get_process_elapsed_time(struct task_struct *task)
@@ -62,19 +62,23 @@ static long get_process_elapsed_time(struct task_struct *task)
 	// #16 cutime - Waited-for children's CPU time spent in user code (in clock ticks)
 	// #17 cstime - Waited-for children's CPU time spent in kernel code (in clock ticks)
 	// #22 starttime - Time when the process started, measured in clock ticks
-	unsigned long long utime, stime, cutime, cstime, start_time;
-	unsigned long long utime_sec, stime_sec, start_time_sec;
-	unsigned long long utime_msec, stime_msec, start_time_msec;
-	unsigned long long total_time;
-	long long cpu_usage = 0;
-	long long elapsed_nsec, usage_nsec;
-	long long elapsed_sec, usage_sec;
-	int clk_tck = 100; // constants
-	int number_of_cpu = 2;
+	// unsigned long long utime, stime, cutime, cstime;
+	unsigned long long start_time;
+	// unsigned long long utime_sec, stime_sec, start_time_sec;
+	// unsigned long long utime_msec, stime_msec, start_time_msec;
+	// unsigned long long total_time;
+	// long long cpu_usage = 0;
+	// long long elapsed_nsec;
+	// long long usage_nsec;
+	long long elapsed_sec;
+	// long long usage_sec;
+	// int clk_tck = 100; // constants
+	// int number_of_cpu = 2;
 
 	if (task == NULL)
 	{
-		return -EINVAL;
+		pr_err("An error occurred in task\n");
+		return -EINVAL; // Return "Invalid argument" error
 	}
 
 	// The reason for this is that the utime value in the /proc/[pid]/stat file is measured in clock ticks,
@@ -91,11 +95,12 @@ static long get_process_elapsed_time(struct task_struct *task)
 
 static int proc_seq_show(struct seq_file *s, void *v)
 {
-	printk("Hit proc_seq_show");
+	// printk("Hit proc_seq_show");
 
 	loff_t *spos = (loff_t *)v;
 
-	unsigned long long utime, stime, cutime, cstime, start_time;
+	unsigned long long utime, stime;
+	// unsigned long long cutime, cstime, start_time;
 	unsigned long long total_time;
 	struct task_struct *task;
 
@@ -103,7 +108,7 @@ static int proc_seq_show(struct seq_file *s, void *v)
 			   "PID\t NAME\t ELAPSED_TIME\t TOTAL_TIME\t utime\t stime\t start_time\t uptime\t\n");
 	for_each_process(task)
 	{
-		printk(KERN_INFO "Process: %s (pid: %d)\n", task->comm, task->pid);
+		// printk(KERN_INFO "Process: %s (pid: %d)\n", task->comm, task->pid);
 
 		utime = task->utime;
 		stime = task->stime;
@@ -113,7 +118,7 @@ static int proc_seq_show(struct seq_file *s, void *v)
 		long elapsed_time = get_process_elapsed_time(task);
 
 		seq_printf(s,
-				   "%d\t %s\t %lld\t %lld\t %lld\t %lld\t %lld\t %lld\t\n ",
+				   "%d\t %s\t %ld\t %lld\t %lld\t %lld\t %lld\t %lld\t\n ",
 				   task->pid,
 				   task->comm,
 				   elapsed_time,
@@ -143,29 +148,29 @@ static struct seq_operations proc_seq_ops = {
 	.stop = proc_seq_stop,
 	.show = proc_seq_show};
 
-static int procfile_single_open(struct inode *inode, struct file *file)
-{
-	printk("Hit procfile_single_open");
-	return single_open(file, proc_seq_show, NULL);
-}
+// static int procfile_single_open(struct inode *inode, struct file *file)
+// {
+// 	printk("Hit procfile_single_open");
+// 	return single_open(file, proc_seq_show, NULL);
+// }
 
 static int procfile_open(struct inode *inode, struct file *file)
 {
-	printk("Hit procfile_open");
+	// printk("Hit procfile_open");
 	return seq_open(file, &proc_seq_ops);
 }
 
 static ssize_t procfile_write(struct file *file, const char *buffer, size_t count, loff_t *off)
 {
-	printk("Hit procfile_write");
+	// printk("Hit procfile_write");
 	return 1;
 }
 
-static int procfile_show(struct seq_file *m, void *v)
-{
-	printk("Hit procfile_show");
-	return 0;
-}
+// static int procfile_show(struct seq_file *m, void *v)
+// {
+// 	printk("Hit procfile_show");
+// 	return 0;
+// }
 
 #ifdef HAVE_PROC_OPS
 static const struct proc_ops proc_file_fops = {
@@ -194,13 +199,64 @@ static int __init init_kernel_module(void)
 
 	// adapted from stackoverflow.com/questions/8516021/proc-create-example-for-kernel-module
 	// fixed the version issue from https://stackoverflow.com/questions/64931555/how-to-fix-error-passing-argument-4-of-proc-create-from-incompatible-pointer
-	proc_create("log_file", 0, NULL, &proc_file_fops);
+	log_file = proc_create("log_file", 0, NULL, &proc_file_fops);
 
 	return 0;
 }
 
+static void export_virtual_file_into_actual_file(void)
+{
+	// Allocate a buffer to read data from the virtual file
+	char *buffer = (char *)kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!buffer)
+	{
+		pr_err("Failed to allocate memory for buffer\n");
+	}
+
+	// // Open the virtual file
+	// virtual_file = filp_open(PROC_FILE_PATH, O_RDONLY, 0);
+	// if (IS_ERR(virtual_file))
+	// {
+	// 	pr_err("Failed to open virtual file\n");
+	// }
+
+	// Create the actual file on disk
+	actual_file = filp_open(ACTUAL_FILE_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (IS_ERR(actual_file))
+	{
+		pr_err("Failed to create actual file\n");
+	}
+
+	// // Copy the virtual file's contents to the buffer
+	// ssize_t ret = kernel_read(virtual_file, buffer, PAGE_SIZE, &virtual_file->f_pos);
+
+	// Read data from the virtual file and write it to the actual file on disk
+	// while ((bytes_read = kernel_read(virtual_file, buffer, PAGE_SIZE, &virtual_file->f_pos)) > 0)
+	// {
+	//     ssize_t bytes_written = kernel_write(actual_file, buffer, bytes_read, &actual_file->f_pos);
+	//     if (bytes_written != bytes_read)
+	//     {
+	//         pr_err("Failed to write data to %s\n", ACTUAL_FILE_PATH);
+	//     }
+	// }
+
+	if (buffer)
+	{
+		kfree(buffer);
+	}
+	if (virtual_file)
+	{
+		filp_close(virtual_file, NULL);
+	}
+	if (actual_file)
+	{
+		filp_close(actual_file, NULL);
+	}
+}
+
 static void __exit exit_kernel_module(void)
 {
+	export_virtual_file_into_actual_file();
 	remove_proc_entry("log_file", NULL);
 	printk(KERN_INFO "Process logger module unloaded\n");
 }
