@@ -1,4 +1,0 @@
-#!/bin/bash
-
-gcc -o logger logger.c
-./logger

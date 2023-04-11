@@ -1,9 +1,11 @@
+/********* export_log_file.c ***********/
+// Temporary file to export virtual file into actual file
 #include <stdio.h>
 
 int main()
 {
     char filename[] = "/proc/log_file";
-    char output_filename[] = "/home/vboxuser/Documents/log_file.txt";
+    char output_filename[] = "/home/vboxuser/Documents/linux_log_file.txt";
     FILE *fp, *outfp;
     char buffer[1024];
     size_t bytes_read;

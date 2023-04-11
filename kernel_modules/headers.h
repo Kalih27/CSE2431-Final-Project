@@ -14,6 +14,9 @@
 #include <linux/ktime.h>
 #include <linux/types.h>
 #include <linux/fs.h>
+#include <linux/sched/signal.h>
+#include <linux/pid_namespace.h>
+#include <asm/io.h>
 
 static int endflag;
 
