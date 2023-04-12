@@ -8,7 +8,6 @@ PWD := $(shell pwd)
 default: 
 	$(info Hit default)
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
-	gcc -o export_log_file export_log_file.c -lpthread
   
 endif 
 

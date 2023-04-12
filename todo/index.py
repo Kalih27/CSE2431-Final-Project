@@ -1,38 +1,12 @@
+# sorted_ps = sorted(psutil.process_iter(['name', 'cpu_times']), key=lambda p: sum(p.info['cpu_times'][:2]) if p.info['cpu_times'] is not None else 0)
+# for p in sorted_ps:
+#     print(p.pid, p.info['name'])
+#     if p.info['cpu_times'] is not None:
+#         print(sum(p.info['cpu_times']))
+#     else:
+#         print(0)
 
 
-
-# import pandas as pd
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
-# # Load the Excel file
-# processData = pd.read_excel("data.xls")
-# print(processData.columns)
-# print(processData.dtypes)
-# objTypeCols = processData[[i for i in processData.columns if processData[i].dtype == 'object']]; del(i)
-
-# # Adding missing values intentionally
-# # processData.loc[np.random.choice(len(processData), size=200, replace=False), 'EmpLastSalaryHikePercent'] = np.nan # Inserting NaN values for analysis
-# # processData['EmpLastSalaryHikePercent'].isnull().value_counts()
-# # processData['EmpLastSalaryHikePercent'].isnull().sum()
-
-# # Imputing these missing values
-# # from sklearn.preprocessing import Imputer
-# # imputeMissing = Imputer() # When we do "fit", it calculates mean of each column. 
-# # imputeMissing.fit_transform(processData[['EmpLastSalaryHikePercent']]) # When we do "transform", it imputes
-# # processData['EmpLastSalaryHikePercent'].mean()
-# # When we use the same transform on test data, it will use training info to impute the test data
-
-# # Another Approach - Adding boolean col which represents original value as missing or not along with imputed column
-# # cols_w_missing = (col for col in processData.columns if processData[col].isnull().any()) # Generator Comprehension
-# # for col in cols_w_missing:
-# #     processData[col+"_missing"] = processData[col].isnull() # Adding new cols that contains T if missing
-# # processData['EmpLastSalaryHikePercent_missing']
-
-# #
-# corrprocessData = processData.corr()
-# print(corrprocessData)
 # corrprocessData['PerformanceRating'].sort_values(ascending=False)
 # corrprocessData['PerformanceRating'].sort_values(ascending=False).index[:-4:-1]
 # # EmpEnvironmentSatisfaction, EmpLastSalaryHikePercent is having high Corr with PerformanceRating
@@ -73,10 +47,6 @@
 # del dummyCols,i
 # # ohe = OneHotEncoder()
 # # tmp = OneHotEncoder(categorical_features=le.fit_transform(processData['MaritalStatus']))
-
-# # Model building
-# from sklearn.model_selection import train_test_split
-# train, test = train_test_split(processData, test_size=0.3, random_state=123, stratify=processData["PerformanceRating"])
 
 # ######################################### Decision Tree ###############################################
 # from sklearn.tree import DecisionTreeClassifier
