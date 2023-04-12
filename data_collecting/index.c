@@ -16,11 +16,9 @@
 int complete_time;
 FILE *fp, *outfp;
 
-// Note: This function returns a pointer to a substring of the original string.
-// If the given string was allocated dynamically, the caller must not overwrite
-// that pointer with the returned value, since the original pointer must be
-// deallocated using the same allocator with which it was allocated.  The return
-// value must NOT be deallocated using free() etc.
+// If the given string was allocated dynamically, the caller must not overwrite that pointer with the returned value
+// since the original pointer must be deallocated using the same allocator with which it was allocated.
+// Return a pointer to a substring of the original string. The return value must NOT be deallocated using free() etc.
 char *trim_white_space(char *str)
 {
     char *end;
@@ -57,7 +55,7 @@ void output_log_file()
     // Loop indefinitely to continuously read from the file
     while (start_time <= complete_time)
     {
-        printf("Current time: %d \n", start_time);
+        // printf("Current time: %d \n", start_time);
 
         // Read a line from the file
         line = fgets(buffer, BUFFER_SIZE, fp);
@@ -93,7 +91,6 @@ void output_log_file()
         }
 
         memset(updated_buffer, 0, BUFFER_SIZE);
-        sleep(1);
         start_time++;
     }
 }
@@ -118,7 +115,7 @@ int main()
         return 1;
     }
 
-    printf("Enter complete time in seconds (any positive integer): ");
+    printf("Enter # of rows for export (any positive integer): ");
     scanf("%d", &complete_time);
     if (complete_time <= 0)
     {
