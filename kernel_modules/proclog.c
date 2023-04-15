@@ -22,7 +22,7 @@
 #include "helper.c"
 
 long start_time_s;
-s64 uptime;
+s64 uptime_ms;
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -91,7 +91,7 @@ static long get_process_elapsed_time(struct task_struct *task)
 	// whereas the utime field in the task_struct is measured in nanoseconds.
 	start_time = task->start_time;
 
-	elapsed_sec = (long long)(uptime * 1000000000) - start_time;
+	elapsed_sec = (long long)(uptime_ms * 1000000) - start_time;
 
 	return elapsed_sec;
 }
@@ -103,13 +103,11 @@ static int proc_seq_show(struct seq_file *s, void *v)
 	loff_t *spos = (loff_t *)v;
 	unsigned long long utime, stime;
 	unsigned long long total_time;
+	char *comm;
 	struct task_struct *task;
 
 	// kernel system timer
-	uptime == ktime_divns(ktime_get_coarse_boottime(), NSEC_PER_SEC);
-
-	seq_printf(s,
-			   "PID\t NAME\t ELAPSED_TIME\t TOTAL_TIME\t utime\t stime\t start_time\t uptime\t\n");
+	uptime_ms = ktime_to_ms(ktime_get_boottime());
 
 	for_each_process(task)
 	{
@@ -120,18 +118,20 @@ static int proc_seq_show(struct seq_file *s, void *v)
 		total_time = utime + stime;
 		long elapsed_time = get_process_elapsed_time(task);
 
+		comm = task->comm;
+
+		// "PID\t NAME\t ELAPSED_TIME\t TOTAL_TIME\t utime\t stime\t start_time\t uptime\t\n"
 		seq_printf(s,
 				   "%d\t %s\t %ld\t %lld\t %lld\t %lld\t %lld\t %lld\t\n ",
 				   task->pid,
-				   task->comm,
+				   comm,
 				   elapsed_time,
 				   total_time,
 				   task->utime,
 				   task->stime,
 				   task->start_time,
-				   uptime);
+				   uptime_ms);
 	}
-	seq_printf(s, "%Ld\n", *spos);
 
 	return 0;
 }

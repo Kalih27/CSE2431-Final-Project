@@ -9,9 +9,7 @@
 	```
 4. Python dependencies:
 	```sh
-   $ pip3 install -U scikit-learn
-   $ python3 -m pip install -U matplotlib
-   $ pip3 install seaborn
+   $ pip3 install -r REQUIREMENTS.txt
 	```
 
 ## How to install proclog kernel module to collect linux process data:
@@ -79,4 +77,6 @@
    $ bash ./test_cpu_usage.sh
    ``` 
 
- 
+   ```
+   $ tar -cvzf linux_log_file.tar.gz linux_log_file.csv
+   ```

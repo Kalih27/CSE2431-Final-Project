@@ -52,6 +52,9 @@ void output_log_file()
     int start_time = 1;
     char *token;
 
+    // header
+    fprintf(outfp, "PID,NAME,ELAPSED_TIME,TOTAL_TIME,utime,stime,start_time,uptime\n");
+
     // Loop indefinitely to continuously read from the file
     while (start_time <= complete_time)
     {
@@ -77,7 +80,6 @@ void output_log_file()
                 }
                 else
                 {
-                    strcat(updated_buffer, NEXT_LINE);
                     break;
                 }
             }
