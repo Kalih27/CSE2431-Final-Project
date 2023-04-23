@@ -298,6 +298,7 @@ def random_forest_regression(platform, updated_df):
     y_rfr_test_pred = rfr.predict(X_test)
 
     # Show variable importances
+    # https://scikit-learn.org/stable/modules/feature_selection.html
     feature_importances_df = pd.DataFrame(zip(
         updated_rfr_df_cols, rfr.feature_importances_), columns=["Feature", "Importance"])
     sorted_feature_importances_df = feature_importances_df.sort_values(
