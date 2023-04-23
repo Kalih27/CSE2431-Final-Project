@@ -96,6 +96,14 @@ static long get_process_elapsed_time(struct task_struct *task)
 	return elapsed_sec;
 }
 
+// Since version 4.14 of Linux kernel, vfs_read and vfs_write functions are no longer exported for use in modules.
+// Instead, functions exclusively for kernel's file access are provided:
+// # Read the file from the kernel space.
+// ssize_t kernel_read(struct file *file, void *buf, size_t count, loff_t *pos);
+// # Write the file from the kernel space.
+// ssize_t kernel_write(struct file *file, const void *buf, size_t count, loff_t *pos);
+// Also, filp_open no longer accepts user-space string, so it can be used for kernel access directly (without dance with set_fs).
+// Additionally, reading file from kernel is not recommended 
 static int proc_seq_show(struct seq_file *s, void *v)
 {
 	printk("Hit proc_seq_show");
