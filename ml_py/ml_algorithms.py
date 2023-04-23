@@ -323,8 +323,6 @@ def random_forest_regression(platform, updated_df):
     rfr_rmse_mean_scores = abs(rfr_rmse_scores.mean())
     rfr_rmse_std_scores = rfr_rmse_scores.std()
 
-    # TODO: Get to know more about cross validation https://scikit-learn.org/stable/modules/cross_validation.html
-    # TODO: Apply cross_score_predict ? https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_predict.html#sklearn.model_selection.cross_val_predict
     print("######################################### Visualization ###############################################")
     plt.figure(figsize=(5, 5))
     plt.scatter(x=y_train, y=y_rfr_train_pred, c="#7CAE00", alpha=0.3)
