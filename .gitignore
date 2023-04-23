@@ -1,0 +1,11 @@
+*.cmd
+*.ko
+*.o
+*.mod.c
+*.mod.o
+*.mod
+modules.order
+Module.symvers
+.DS_Store
+data_collecting/linux_log_file.csv
+data_collecting/darwin_processes.csv

@@ -1,35 +1,70 @@
-# CSE2431-Final-Project
-
-## Group Members:
-### Jiaqian Huang
-### Andrew Maloney
-### Alec Wilson
-
-## Files
-### Makefile, runLogger, logger.c, proclog.c
+# Prediction of Process Performance
 
 ## Requirements:
-1. Make sure you have installed:
+1. This project requires both linux and MacOS environments to collect data respectively.
+2. Python version >= 3.0; use pip3; kernel version >= 5.6
+3. Linux enrionment dependencies:
+	```sh
 	$ sudo apt-get install build-essential
-      
-## How to run Logger file
-1. $ runLogger
-    This will help compile the logger.c file and then run ./logger
-2. You will be asked whether the process should be logged. If not the output will be showed in the terminal directly.
-2. Will be asked for the rate at which the process will poll the proc folder (20 to 999 ms).
-3. Input the proc id for which the length of next CPU burst will be calculated (You can get this from the list of process ids in terminal with help of some command lines.).
-4. Get a log.txt file to store the actual length of next 10 CPU burst.
-5. Choose to continue executing the programming or quit
+	```
+4. Python dependencies:
+	```sh
+   $ pip3 install -r REQUIREMENTS.txt
+	```
 
-## How to use proclog.c
-1. $ make
-    This will make the proclog kernel module
-2. $ sudo insmod proclog.ko
-    This will install the kernel module. A file /proc/timing_log can now be written to by various programs
-3. To see an example of this run the following code:
-4. $ gcc -o test test.c
-5. $ sudo ./test
-    You will need sudo privaleges to write to a proc file
-6. $ cat /proc/timing_log
-    This shows that the test file ran andd printed "This is test output" to the proc file.
-    Make sure that any writing done to the proc file ends with a new line character
+## How to install proclog kernel module to collect linux process data:
+1. cd into kernel_modules folder
+2. Compile the proclog kernel module by following command.
+   ```sh
+   $ make
+   ```
+3. Install the kernel module by following command. Then a file /proc/log_file can be written to by kernel module.
+   ```sh
+   $ make exec
+   ```  
+4. You can verify this by running the following code, which lists all of the modules currently in the kernel. Among them, you should see proclog. Note that the kernel replaces dashes in your module’s filename with underscores when it loads it. If you want to remove it, you can run the following command. 
+   ```sh
+   $ lsmod
+   ```
+   ```sh
+   $ make stop
+   ```
+5. You can verify the virtual file by running the following code, which lists all of process tasks in virtual file.
+   ```sh
+   $ cat /proc/log_file
+   ```
+6. In the source code, we can check some logging to let it be known our module loaded okay by running the following command. If the operation gets denied, set the restriction to 0.  
+   ```sh
+   $ dmesg 
+   ```
+   ```sh
+   $ sudo sysctl kernel.dmesg_restrict=0
+   ```
+
+## How to export linux process data from /proc/log_file into actual file:   
+1. cd into data_collecting folder
+2. Compile the index.c by following command.
+   ```sh
+   $ make
+   ```
+3. Execute the following command to collect data.   
+   ```sh
+   $ ./index 
+   ```
+4. A csv file will be generated.
+
+## How to use python functions to collect mac processes data:
+1. cd into data_collecting folder   
+2. Run the following command. 
+   ```sh
+   $ sudo python3 index.py
+   ```
+3. A csv file will be generated.
+
+## How to run python functions to predict processes performance:
+1. cd into ml_py folder   
+2. Run the following command. 
+   ```sh
+   $ python3 index.py
+   ```
+3. The results will be shown in terminal.   
