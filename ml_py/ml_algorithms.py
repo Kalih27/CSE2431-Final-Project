@@ -286,7 +286,12 @@ def random_forest_regression(platform, updated_df):
     y_rfr_train_pred = rfr.predict(X_train)
     y_rfr_test_pred = rfr.predict(X_test)
 
-    # TODO: Show variable importances
+    # Show variable importances
+    feature_importances_df = pd.DataFrame(zip(
+        updated_rfr_df_cols, rfr.feature_importances_), columns=["Feature", "Importance"])
+    sorted_feature_importances_df = feature_importances_df.sort_values(
+        by='Importance', ascending=False)
+    # print(sorted_feature_importances_df)
 
     print("######################################### Evaluation ###############################################")
     """ MSE and R2 """
