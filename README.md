@@ -51,6 +51,7 @@
    ```sh
    $ ./index 
    ```
+4. A csv file will be generated.
 
 ## How to use python functions to collect mac processes data:
 1. cd into data_collecting folder   
@@ -61,22 +62,9 @@
 3. A csv file will be generated.
 
 ## How to run python functions to predict processes performance:
-1. 
-
-## How to use test functions:
-1. cd into test folder
-2. if you plan to test tasks, you need to run the following:
+1. cd into ml_py folder   
+2. Run the following command. 
    ```sh
-   $ make
+   $ python3 index.py
    ```
-   ```sh
-   $ ./test_tasks
-   ```
-3. if you plan to test CPU usage, you need to run the following:
-   ```sh
-   $ bash ./test_cpu_usage.sh
-   ``` 
-
-   ```
-   $ tar -cvzf linux_log_file.tar.gz linux_log_file.csv
-   ```
+3. The results will be shown in terminal.   

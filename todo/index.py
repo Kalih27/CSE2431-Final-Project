@@ -22,41 +22,6 @@
 # processData[corrprocessData['PerformanceRating'].sort_values(ascending=False).index[0:4]].head()
 # processData[corrprocessData['PerformanceRating'].sort_values(ascending=False).index[[0,-1,-2,-3]]].head()
 
-# # Dropping un-necessary information
-
-# # Group by Department and find the which Department has the Highest Performance rating
-# processData.groupby("EmpDepartment")['PerformanceRating'].mean()
-# """
-# Obeservations from above line:
-# 1)Performance Rating for employees in the Development department is Highest.
-# 2)Performance rating for employess in the Sales department is lowest
-# 3)Performance Rating for employees in the Data Science department is next to Development team
-# 4)SalaryHike for the employee in the Data Science department is highest.
-# """
-
-# # Check for Unique Departments in the Dataset
-# processData['EmpDepartment'].value_counts()
-
-# # Find the Number of Employees who have rating of 2,3,4
-# processData["PerformanceRating"].value_counts()
-
-# # Converting data type to 'category' - encoding
-
-# # Label Encoding
-# # from sklearn.preprocessing import LabelEncoder,OneHotEncoder
-# # le = LabelEncoder() # LabelEncoder - Code categories into 0,1,2.....
-# # for i in objTypeCols.columns.values.tolist()[1:]:
-# #     processData[i+"_coded"] = processData[i].astype('category')
-# #     processData[i+"_coded"] = le.fit_transform(processData[i+"_coded"])
-
-# # One Hot Encoding
-# for i in objTypeCols.columns.values.tolist()[1:]:
-#     dummyCols = pd.get_dummies(processData[i], prefix=i) # Convert 1/0 based on presence; C no. of columns
-#     processData = processData.join(dummyCols)
-# del dummyCols,i
-# # ohe = OneHotEncoder()
-# # tmp = OneHotEncoder(categorical_features=le.fit_transform(processData['MaritalStatus']))
-
 # ######################################### Decision Tree ###############################################
 # from sklearn.tree import DecisionTreeClassifier
 # dtc = DecisionTreeClassifier(criterion="entropy", max_depth=8, min_samples_split=20, random_state=99)
